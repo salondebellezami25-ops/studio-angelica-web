@@ -1,20 +1,20 @@
-// Panamá: UTC-5 fijo (sin horario de verano)
-export const TZ = 'America/Panama'
-export const OFFSET = '-05:00'
+// Venezuela: UTC-4 fijo (sin horario de verano)
+export const TZ = 'America/Caracas'
+export const OFFSET = '-04:00'
 const H = 3600000
 
-export const ymdNow = () => new Date(Date.now() - 5 * H).toISOString().slice(0, 10)
+export const ymdNow = () => new Date(Date.now() - 4 * H).toISOString().slice(0, 10)
 export const addDays = (ymd, n) => { const d = new Date(ymd + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10) }
 export const weekday = (ymd) => new Date(ymd + 'T12:00:00Z').getUTCDay()
 export const toISO = (ymd, hm) => new Date(`${ymd}T${hm.slice(0, 5)}:00${OFFSET}`).toISOString()
-export const ymdOf = (iso) => new Date(new Date(iso).getTime() - 5 * H).toISOString().slice(0, 10)
+export const ymdOf = (iso) => new Date(new Date(iso).getTime() - 4 * H).toISOString().slice(0, 10)
 const toMin = (hm) => { const [h, m] = hm.split(':').map(Number); return h * 60 + m }
 const toHM = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`
 
 const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1)
-export const fmtTime = (iso) => new Intl.DateTimeFormat('es-PA', { timeZone: TZ, hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(iso))
-export const fmtDateLong = (ymd) => cap(new Intl.DateTimeFormat('es-PA', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(ymd + 'T12:00:00Z')))
-export const fmtMonth = (ymd) => cap(new Intl.DateTimeFormat('es-PA', { timeZone: 'UTC', month: 'long', year: 'numeric' }).format(new Date(ymd + 'T12:00:00Z')).replace(' de ', ' '))
+export const fmtTime = (iso) => new Intl.DateTimeFormat('es-VE', { timeZone: TZ, hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(iso))
+export const fmtDateLong = (ymd) => cap(new Intl.DateTimeFormat('es-VE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(ymd + 'T12:00:00Z')))
+export const fmtMonth = (ymd) => cap(new Intl.DateTimeFormat('es-VE', { timeZone: 'UTC', month: 'long', year: 'numeric' }).format(new Date(ymd + 'T12:00:00Z')).replace(' de ', ' '))
 export const money = (n) => '$' + Number(n || 0).toFixed(2).replace(/\.00$/, '')
 export const dur = (m) => m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ' ' + (m % 60) + ' min' : ''}` : `${m} min`
 export const WD = ['D', 'L', 'M', 'M', 'J', 'V', 'S']
