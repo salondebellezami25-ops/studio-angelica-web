@@ -4,8 +4,8 @@ import { fmtTime, fmtDateLong, ymdOf, money } from '../../lib/time'
 
 export const STATUS = { pendiente: 'Pendiente', confirmada: 'Confirmada', completada: 'Completada', cancelada: 'Cancelada', no_asistio: 'No asistió' }
 
-// Panamá: si el número tiene 7-8 dígitos se antepone 507
-const intl = (p) => { const d = String(p).replace(/\D/g, ''); return d.length <= 8 ? '507' + d : d }
+// Venezuela: 0412-1234567 → 584121234567; 4121234567 → 584121234567
+const intl = (p) => { const d = String(p).replace(/\D/g, ''); if (d.startsWith('58') && d.length >= 12) return d; if (d.startsWith('0')) return '58' + d.slice(1); return d.length === 10 ? '58' + d : d }
 
 export default function ApptTable({ rows, onChange, showDate = true, salonName }) {
   if (!rows.length) return <p className="muted">No hay citas en este rango.</p>
