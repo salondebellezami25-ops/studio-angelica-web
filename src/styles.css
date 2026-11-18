@@ -68,14 +68,26 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; color: var(--ink); mar
 .hero.dark { background: var(--carbon); color: var(--white); }
 .hero.dark h2 { color: var(--white); }
 .hero.dark .hero-foot p { opacity: .8; }
-.hero.split { flex-direction: row; align-items: stretch; }
-.hero.split .hero-in { flex: 1 1 50%; max-width: none; margin: 0; padding-left: max(24px, calc((100vw - var(--max)) / 2 + 24px)); }
-.hero-side { position: relative; flex: 1 1 50%; min-height: 78vh; }
-.hero-side img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+/* Portada con foto a todo el ancho y logo encima */
+.hero-cover { background: var(--carbon); color: var(--white); }
+.cover-media { position: relative; overflow: hidden; }
+.cover-media > img { display: block; width: 100%; height: auto; max-height: calc(100vh - 81px); object-fit: cover; object-position: center bottom; }
+.cover-veil { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.4) 35%, rgba(0,0,0,0) 58%); pointer-events: none; }
+.cover-in { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 24px; padding: clamp(16px, 4vw, 56px) max(24px, calc((100vw - var(--max)) / 2 + 24px)); }
+.cover-logo { margin: 0; }
+.cover-logo img { width: clamp(120px, 26vw, 420px); height: auto; mix-blend-mode: screen; }
+.cover-text { max-width: 440px; }
+.cover-text .h-sub { color: var(--white); margin-bottom: 20px; font-size: clamp(24px, 2.4vw, 32px); }
+.cover-band { padding: 20px 24px 24px; }
+.cover-band .h-sub { color: var(--white); font-size: 26px; margin-bottom: 14px; }
+.only-m { display: none; }
 @media (max-width: 860px) {
-  .hero.split { flex-direction: column; }
-  .hero-side { min-height: 0; aspect-ratio: 4 / 5; order: -1; }
-  .hero.split .hero-in { padding-left: 24px; }
+  .only-d { display: none; }
+  .only-m { display: block; }
+  .cover-media > img { max-height: none; }
+  .cover-veil { background: linear-gradient(90deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 45%); }
+  .cover-in { padding: 12px 16px; }
+  .cover-logo img { width: 30vw; max-width: 150px; }
 }
 
 /* Grid */
