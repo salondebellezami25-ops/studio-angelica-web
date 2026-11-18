@@ -23,8 +23,7 @@ export default function Home() {
   const { settings: s, services, gallery, hours } = useSite()
   const featured = [...services].sort((a, b) => (b.featured - a.featured)).slice(0, 4)
   const hasPhoto = !!s.hero_url
-  const dark = hasPhoto || !!s.logo_url
-  const split = hasPhoto && !!s.logo_url  // logo a la izquierda + foto a la derecha
+  const dark = !!s.logo_url
   const steps = [
     ['Elige tu experiencia', 'Explora el catálogo y selecciona el tratamiento que mejor se adapte a ti.'],
     ['Escoge fecha y hora', 'El calendario te muestra solo los espacios disponibles.'],
@@ -34,23 +33,49 @@ export default function Home() {
 
   return (
     <>
-      <section className={`hero ${split ? 'dark split' : hasPhoto ? 'photo' : dark ? 'dark' : ''}`}>
-        {hasPhoto && !split && <><img className="hero-bg" src={s.hero_url} alt="" /><div className="hero-veil" /></>}
-        <div className="hero-in">
-          {s.logo_url && (!hasPhoto || split)
-            ? <h1 style={{ margin: 0 }}><img className="hero-logo" src={s.logo_url} alt={s.salon_name} /></h1>
-            : <h1 className="display">{s.salon_name}</h1>}
-          <div className="hero-foot">
-            <h2 className="h-sub">{s.tagline}</h2>
-            <p>Reserva en línea en menos de un minuto. Te confirmamos por WhatsApp.</p>
-            <div className="toolbar" style={{ gap: 32 }}>
-              <Link className={`ghost ${dark ? 'light' : ''}`} to="/reservar">Reservar cita</Link>
-              <Link className={`ghost ${dark ? 'light' : ''}`} to="/servicios">Ver servicios</Link>
+      {hasPhoto ? (
+        <section className="hero-cover">
+          <div className="cover-media">
+            <img src={s.hero_url} alt="" />
+            <div className="cover-veil" />
+            <div className="cover-in">
+              {s.logo_url
+                ? <h1 className="cover-logo"><img src={s.logo_url} alt={s.salon_name} /></h1>
+                : <h1 className="display" style={{ color: 'var(--white)' }}>{s.salon_name}</h1>}
+              <div className="cover-text only-d">
+                <h2 className="h-sub">{s.tagline}</h2>
+                <div className="toolbar" style={{ gap: 32 }}>
+                  <Link className="ghost light" to="/reservar">Reservar cita</Link>
+                  <Link className="ghost light" to="/servicios">Ver servicios</Link>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        {split && <div className="hero-side"><img src={s.hero_url} alt="" /></div>}
-      </section>
+          <div className="cover-band only-m">
+            <h2 className="h-sub">{s.tagline}</h2>
+            <div className="toolbar" style={{ gap: 28 }}>
+              <Link className="ghost light" to="/reservar">Reservar cita</Link>
+              <Link className="ghost light" to="/servicios">Ver servicios</Link>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section className={`hero ${dark ? 'dark' : ''}`}>
+          <div className="hero-in">
+            {s.logo_url
+              ? <h1 style={{ margin: 0 }}><img className="hero-logo" src={s.logo_url} alt={s.salon_name} /></h1>
+              : <h1 className="display">{s.salon_name}</h1>}
+            <div className="hero-foot">
+              <h2 className="h-sub">{s.tagline}</h2>
+              <p>Reserva en línea en menos de un minuto. Te confirmamos por WhatsApp.</p>
+              <div className="toolbar" style={{ gap: 32 }}>
+                <Link className={`ghost ${dark ? 'light' : ''}`} to="/reservar">Reservar cita</Link>
+                <Link className={`ghost ${dark ? 'light' : ''}`} to="/servicios">Ver servicios</Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {featured.length > 0 && (
         <section className="section">
