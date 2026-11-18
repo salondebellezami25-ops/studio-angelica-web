@@ -6,13 +6,14 @@ import Calendar from '../components/Calendar'
 import * as api from '../lib/api'
 import { ymdNow, addDays, toISO, ymdOf, dayState, freeSlots, fmtTime, fmtDateLong, money, dur } from '../lib/time'
 
-const STEPS = ['Servicio', 'Fecha y hora', 'Tus datos', 'Listo']
+const STEPS = ['Servicios', 'Fecha y hora', 'Tus datos', 'Listo']
 
 export default function Booking() {
   const { settings: s, categories, services, hours, blocked } = useSite()
   const [params] = useSearchParams()
+  const initial = params.get('servicio')
   const [step, setStep] = useState(0)
-  const [svcId, setSvcId] = useState(params.get('servicio') || '')
+  const [ids, setIds] = useState(initial && services.some(x => x.id === initial) ? [initial] : [])
   const [month, setMonth] = useState(ymdNow().slice(0, 7))
   const [day, setDay] = useState('')
   const [slot, setSlot] = useState('')
@@ -22,8 +23,13 @@ export default function Booking() {
   const [err, setErr] = useState('')
   const [sending, setSending] = useState(false)
 
-  const svc = services.find(x => x.id === svcId)
-  useEffect(() => { if (svc && params.get('servicio')) setStep(1) }, []) // eslint-disable-line
+  // Servicios elegidos (en el orden en que se marcaron) y totales
+  const chosen = ids.map(id => services.find(x => x.id === id)).filter(Boolean)
+  const totalDur = chosen.reduce((t, x) => t + Number(x.duration_min), 0)
+  const totalPrice = chosen.reduce((t, x) => t + Number(x.price), 0)
+  const anyFrom = chosen.some(x => x.price_from)
+  const names = chosen.map(x => x.name).join(' + ')
+  const toggle = (id) => { setIds(v => v.includes(id) ? v.filter(x => x !== id) : [...v, id]); setDay(''); setSlot('') }
 
   // Ocupación del mes visible
   const loadBusy = async () => {
@@ -36,8 +42,8 @@ export default function Booking() {
   }
   useEffect(() => { if (step === 1) loadBusy() }, [month, step]) // eslint-disable-line
 
-  const slotsFor = (ymd) => svc ? freeSlots({
-    ymd, hours, duration: svc.duration_min, step: s.slot_minutes || 30,
+  const slotsFor = (ymd) => totalDur ? freeSlots({
+    ymd, hours, duration: totalDur, step: s.slot_minutes || 30,
     busy: busy.filter(b => ymdOf(b.starts_at) === ymd), minNoticeH: s.min_notice_hours ?? 2
   }) : []
   const stateOf = (ymd) => {
@@ -45,7 +51,7 @@ export default function Booking() {
     if (st !== 'open') return st
     return slotsFor(ymd).length ? 'open' : 'full'
   }
-  const daySlots = useMemo(() => day ? slotsFor(day) : [], [day, busy, svcId]) // eslint-disable-line
+  const daySlots = useMemo(() => day ? slotsFor(day) : [], [day, busy, totalDur]) // eslint-disable-line
 
   const submit = async (e) => {
     e.preventDefault(); setErr('')
@@ -54,7 +60,7 @@ export default function Booking() {
     if (!form.accept) return setErr('Debes aceptar las políticas de la cita.')
     setSending(true)
     try {
-      await api.book({ service_id: svc.id, starts_at: slot, name: form.name, phone: form.phone, email: form.email, notes: form.notes })
+      await api.book({ service_ids: ids, starts_at: slot, name: form.name, phone: form.phone, email: form.email, notes: form.notes })
       setStep(3)
     } catch (e2) {
       setErr(e2.message)
@@ -62,7 +68,8 @@ export default function Booking() {
     } finally { setSending(false) }
   }
 
-  const msg = svc && slot ? `Hola, soy ${form.name}. Acabo de solicitar una cita de ${svc.name} para el ${fmtDateLong(day)} a las ${fmtTime(slot)}.` : ''
+  const msg = chosen.length && slot ? `Hola, soy ${form.name}. Acabo de solicitar una cita de ${names} para el ${fmtDateLong(day)} a las ${fmtTime(slot)}.` : ''
+  const priceTxt = `${anyFrom ? 'desde ' : ''}${money(totalPrice)}`
 
   return (
     <section className="section">
@@ -73,32 +80,49 @@ export default function Booking() {
 
         {step === 0 && (
           <div>
+            <p className="muted" style={{ marginBottom: 24 }}>Puedes elegir uno o varios servicios para la misma cita.</p>
             {categories.concat([{ id: null, name: 'Otros' }]).map(c => {
               const items = services.filter(x => c.id ? x.category_id === c.id : !categories.some(k => k.id === x.category_id))
               if (!items.length) return null
               return (
                 <div key={c.id || 'none'} style={{ marginBottom: 32 }}>
                   <p className="caption muted" style={{ marginBottom: 12 }}>{c.name}</p>
-                  {items.map(x => (
-                    <button key={x.id} className={`pick ${svcId === x.id ? 'on' : ''}`} onClick={() => { setSvcId(x.id); setDay(''); setSlot(''); setStep(1) }}>
-                      <span><span style={{ color: 'var(--ink)' }}>{x.name}</span><br /><span className="muted" style={{ fontSize: 13 }}>{dur(x.duration_min)}</span></span>
-                      <span>{x.price_from ? 'desde ' : ''}{money(x.price)}</span>
-                    </button>
-                  ))}
+                  {items.map(x => {
+                    const on = ids.includes(x.id)
+                    return (
+                      <button key={x.id} className={`pick ${on ? 'on' : ''}`} onClick={() => toggle(x.id)} aria-pressed={on}>
+                        <span style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+                          <span className="tick" aria-hidden="true">{on ? '✓' : ''}</span>
+                          <span><span style={{ color: 'var(--ink)' }}>{x.name}</span><br /><span className="muted" style={{ fontSize: 13 }}>{dur(x.duration_min)}</span></span>
+                        </span>
+                        <span>{x.price_from ? 'desde ' : ''}{money(x.price)}</span>
+                      </button>
+                    )
+                  })}
                 </div>
               )
             })}
+            {chosen.length > 0 && (
+              <div className="pick-bar">
+                <div>
+                  <div className="caption" style={{ color: 'var(--pale-slate)' }}>{chosen.length} {chosen.length === 1 ? 'servicio' : 'servicios'} · {dur(totalDur)}</div>
+                  <div style={{ fontSize: 16 }}>{priceTxt}</div>
+                </div>
+                <button className="btn-line solid" style={{ borderColor: 'var(--white)' }} onClick={() => setStep(1)}>Continuar</button>
+              </div>
+            )}
           </div>
         )}
 
-        {step === 1 && svc && (
+        {step === 1 && chosen.length > 0 && (
           <div className="two wide-gap">
             <div>
-              <p className="note" style={{ marginBottom: 24 }}>
-                <span className="caption muted">Servicio</span><br />
-                <span style={{ color: 'var(--ink)' }}>{svc.name}</span> · {dur(svc.duration_min)} · {svc.price_from ? 'desde ' : ''}{money(svc.price)}{' '}
+              <div className="note" style={{ marginBottom: 24 }}>
+                <span className="caption muted">{chosen.length === 1 ? 'Servicio' : 'Servicios'}</span><br />
+                <span style={{ color: 'var(--ink)' }}>{names}</span><br />
+                {dur(totalDur)} · {priceTxt}{' '}
                 <button className="ghost" style={{ marginLeft: 8 }} onClick={() => setStep(0)}>Cambiar</button>
-              </p>
+              </div>
               <Calendar month={month} onMonth={(m) => { setMonth(m); setDay(''); setSlot('') }} selected={day}
                 onSelect={(d) => { setDay(d); setSlot('') }} stateOf={stateOf} minMonth={ymdNow().slice(0, 7)} />
             </div>
@@ -109,7 +133,7 @@ export default function Booking() {
                   <h3 className="h-sub" style={{ marginBottom: 24 }}>{fmtDateLong(day)}</h3>
                   {daySlots.length
                     ? <div className="slots">{daySlots.map(t => <button key={t} className={`slot ${slot === t ? 'on' : ''}`} onClick={() => setSlot(t)}>{fmtTime(t)}</button>)}</div>
-                    : <p className="muted">No quedan horarios este día.</p>}
+                    : <p className="muted">No quedan horarios este día para {dur(totalDur)}.</p>}
                   <div style={{ marginTop: 32 }}><button className="btn-line solid" disabled={!slot} onClick={() => setStep(2)}>Continuar</button></div>
                 </>
               )}
@@ -117,7 +141,7 @@ export default function Booking() {
           </div>
         )}
 
-        {step === 2 && svc && (
+        {step === 2 && chosen.length > 0 && (
           <div className="two wide-gap">
             <form onSubmit={submit} className="stack">
               <label className="f"><span>Nombre completo *</span><input className="in" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} autoComplete="name" /></label>
@@ -131,11 +155,11 @@ export default function Booking() {
                 <button type="button" className="ghost" onClick={() => setStep(1)}>Volver</button>
               </div>
             </form>
-            <Summary svc={svc} day={day} slot={slot} />
+            <Summary chosen={chosen} day={day} slot={slot} totalDur={totalDur} priceTxt={priceTxt} />
           </div>
         )}
 
-        {step === 3 && svc && (
+        {step === 3 && chosen.length > 0 && (
           <div className="two wide-gap">
             <div className="stack">
               <h2 className="h-heading">Gracias,<br />{form.name.split(' ')[0]}.</h2>
@@ -145,7 +169,7 @@ export default function Booking() {
                 <Link className="ghost" to="/">Volver al inicio</Link>
               </div>
             </div>
-            <Summary svc={svc} day={day} slot={slot} />
+            <Summary chosen={chosen} day={day} slot={slot} totalDur={totalDur} priceTxt={priceTxt} />
           </div>
         )}
       </div>
@@ -153,16 +177,17 @@ export default function Booking() {
   )
 }
 
-function Summary({ svc, day, slot }) {
+function Summary({ chosen, day, slot, totalDur, priceTxt }) {
   return (
     <aside className="summary">
       <p className="caption muted">Resumen</p>
       <dl>
-        <dt>Servicio</dt><dd>{svc.name}</dd>
-        <dt>Fecha</dt><dd >{fmtDateLong(day)}</dd>
+        <dt>{chosen.length === 1 ? 'Servicio' : 'Servicios'}</dt>
+        <dd>{chosen.map(x => <div key={x.id}>{x.name} <span className="muted" style={{ fontSize: 13 }}>· {x.price_from ? 'desde ' : ''}{money(x.price)}</span></div>)}</dd>
+        <dt>Fecha</dt><dd>{fmtDateLong(day)}</dd>
         <dt>Hora</dt><dd>{fmtTime(slot)}</dd>
-        <dt>Duración</dt><dd>{dur(svc.duration_min)}</dd>
-        <dt>Precio</dt><dd>{svc.price_from ? 'desde ' : ''}{money(svc.price)}</dd>
+        <dt>Duración</dt><dd>{dur(totalDur)}</dd>
+        <dt>Total</dt><dd>{priceTxt}</dd>
       </dl>
     </aside>
   )
