@@ -25,7 +25,7 @@ export default function SettingsAdmin() {
     try {
       await api.saveSettings({
         ...f, theme: f.theme || 'none', theme_message: (f.theme_message || '').trim() || null, logo_url: f.logo_url || null, hero_url: f.hero_url || null,
-        whatsapp: String(f.whatsapp).replace(/\D/g, ''), instagram: String(f.instagram).replace(/^@/, '').trim(),
+        whatsapp: (w => w.startsWith('0') ? '58' + w.slice(1) : w)(String(f.whatsapp).replace(/\D/g, '')), instagram: String(f.instagram).replace(/^@/, '').trim(),
         policies: lines(f.policies), promo_items: lines(f.promo_items)
       })
       await reload(); setMsg('Cambios guardados.'); setTimeout(() => setMsg(''), 2500)
@@ -52,7 +52,7 @@ export default function SettingsAdmin() {
           <label className="f full"><span>Dirección</span><input className="in" style={{ background: 'var(--white)' }} value={f.address} onChange={set('address')} /></label>
           <label className="f full"><span>Búsqueda para el mapa (dirección o «lat,lng»)</span><input className="in" style={{ background: 'var(--white)' }} placeholder="8.9824,-79.5199" value={f.maps_query} onChange={set('maps_query')} /></label>
           <label className="f"><span>Teléfono visible</span><input className="in" style={{ background: 'var(--white)' }} value={f.phone} onChange={set('phone')} /></label>
-          <label className="f"><span>WhatsApp (con 507)</span><input className="in" style={{ background: 'var(--white)' }} placeholder="50760000000" value={f.whatsapp} onChange={set('whatsapp')} /></label>
+          <label className="f"><span>WhatsApp (con 58, sin el 0)</span><input className="in" style={{ background: 'var(--white)' }} placeholder="584121234567" value={f.whatsapp} onChange={set('whatsapp')} /></label>
           <label className="f"><span>Instagram (usuario)</span><input className="in" style={{ background: 'var(--white)' }} value={f.instagram} onChange={set('instagram')} /></label>
         </div>
       </div>
