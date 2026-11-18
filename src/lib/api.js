@@ -129,22 +129,25 @@ export async function busySlots(fromISO, toISO) {
   }
   return unwrap(await sb.rpc('busy_slots', { p_from: fromISO, p_to: toISO }))
 }
-export async function book({ service_id, starts_at, name, phone, email, notes }) {
+export async function book({ service_id, service_ids, starts_at, name, phone, email, notes }) {
+  const ids = (service_ids && service_ids.length) ? service_ids : [service_id]
   if (DEMO) {
     return mutate(d => {
-      const s = d.services.find(x => x.id === service_id && x.active)
-      if (!s) throw new Error('Servicio no disponible')
-      const st = new Date(starts_at), en = new Date(st.getTime() + s.duration_min * 60000)
+      const list = ids.map(id => d.services.find(x => x.id === id && x.active))
+      if (!list.length || list.some(x => !x)) throw new Error('Algún servicio ya no está disponible')
+      const total = list.reduce((t, x) => t + Number(x.duration_min), 0)
+      const st = new Date(starts_at), en = new Date(st.getTime() + total * 60000)
       const clash = d.appointments.some(a => ACTIVE.includes(a.status) && new Date(a.starts_at) < en && new Date(a.ends_at) > st)
       if (clash) throw new Error('Ese horario acaba de ocuparse, elige otro')
-      const n = { id: uid(), service_id, service_name: s.name, price: s.price, client_name: name, client_phone: phone,
+      const n = { id: uid(), service_id: ids[0], service_ids: ids, service_name: list.map(x => x.name).join(' + '),
+        price: list.reduce((t, x) => t + Number(x.price), 0), client_name: name, client_phone: phone,
         client_email: email || null, notes: notes || null, starts_at: st.toISOString(), ends_at: en.toISOString(),
         status: 'pendiente', created_at: new Date().toISOString() }
       d.appointments.push(n); return n.id
     })
   }
-  return unwrap(await sb.rpc('book_appointment', {
-    p_service_id: service_id, p_starts_at: starts_at, p_name: name, p_phone: phone, p_email: email || '', p_notes: notes || ''
+  return unwrap(await sb.rpc('book_appointment_multi', {
+    p_service_ids: ids, p_starts_at: starts_at, p_name: name, p_phone: phone, p_email: email || '', p_notes: notes || ''
   }))
 }
 export async function listAppointments(fromISO, toISO) {
