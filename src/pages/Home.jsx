@@ -24,6 +24,7 @@ export default function Home() {
   const featured = [...services].sort((a, b) => (b.featured - a.featured)).slice(0, 4)
   const hasPhoto = !!s.hero_url
   const dark = hasPhoto || !!s.logo_url
+  const split = hasPhoto && !!s.logo_url  // logo a la izquierda + foto a la derecha
   const steps = [
     ['Elige tu experiencia', 'Explora el catálogo y selecciona el tratamiento que mejor se adapte a ti.'],
     ['Escoge fecha y hora', 'El calendario te muestra solo los espacios disponibles.'],
@@ -33,10 +34,10 @@ export default function Home() {
 
   return (
     <>
-      <section className={`hero ${hasPhoto ? 'photo' : dark ? 'dark' : ''}`}>
-        {hasPhoto && <><img className="hero-bg" src={s.hero_url} alt="" /><div className="hero-veil" /></>}
+      <section className={`hero ${split ? 'dark split' : hasPhoto ? 'photo' : dark ? 'dark' : ''}`}>
+        {hasPhoto && !split && <><img className="hero-bg" src={s.hero_url} alt="" /><div className="hero-veil" /></>}
         <div className="hero-in">
-          {s.logo_url && !hasPhoto
+          {s.logo_url && (!hasPhoto || split)
             ? <h1 style={{ margin: 0 }}><img className="hero-logo" src={s.logo_url} alt={s.salon_name} /></h1>
             : <h1 className="display">{s.salon_name}</h1>}
           <div className="hero-foot">
@@ -48,6 +49,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+        {split && <div className="hero-side"><img src={s.hero_url} alt="" /></div>}
       </section>
 
       {featured.length > 0 && (
