@@ -145,7 +145,7 @@ export default function Booking() {
           <div className="two wide-gap">
             <form onSubmit={submit} className="stack">
               <label className="f"><span>Nombre completo *</span><input className="in" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} autoComplete="name" /></label>
-              <label className="f"><span>WhatsApp *</span><input className="in" type="tel" placeholder="6000-0000" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} autoComplete="tel" /></label>
+              <label className="f"><span>WhatsApp *</span><input className="in" type="tel" placeholder="0412-1234567" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} autoComplete="tel" /></label>
               <label className="f"><span>Correo (opcional)</span><input className="in" type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} autoComplete="email" /></label>
               <label className="f"><span>¿Algo que debamos saber?</span><textarea className="in" placeholder="Alergias, condición de la piel, referencia del diseño…" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} /></label>
               <label className="check"><input type="checkbox" checked={form.accept} onChange={e => setForm({ ...form, accept: e.target.checked })} />Leí y acepto las <Link to="/#politicas" target="_blank">políticas de la cita</Link>.</label>
