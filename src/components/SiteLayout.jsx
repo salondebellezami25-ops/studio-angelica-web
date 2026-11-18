@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useSite } from './SiteContext'
 import { DEMO } from '../lib/api'
+import { THEMES, activeTheme } from '../lib/themes'
 
 export function Logo({ settings, className = 'nav-logo' }) {
   const name = settings?.salon_name || ''
@@ -24,6 +25,17 @@ export default function SiteLayout() {
     else window.scrollTo(0, 0)
   }, [loc.pathname, loc.hash])
 
+  const themeId = activeTheme(settings)
+  useEffect(() => {
+    const t = THEMES[themeId], root = document.documentElement
+    root.dataset.theme = themeId
+    if (t && themeId !== 'none') {
+      root.style.setProperty('--accent', t.accent); root.style.setProperty('--accent2', t.accent2)
+      root.style.setProperty('--theme-ink', t.ink); root.style.setProperty('--stripe', t.stripe || t.accent2)
+    }
+    return () => { delete root.dataset.theme }
+  }, [themeId])
+
   if (loading) return <div className="wrap section muted caption">Cargando…</div>
   if (error) return <div className="wrap section"><div className="err">No se pudo cargar el sitio: {error}</div></div>
   const s = settings
@@ -32,6 +44,7 @@ export default function SiteLayout() {
   return (
     <>
       {DEMO && <div className="demo-bar">MODO DEMO · los datos se guardan solo en este navegador · <Link to="/admin">Ir al admin</Link></div>}
+      {themeId !== 'none' && <div className="theme-ribbon">{THEMES[themeId].emoji} {s.theme_message || THEMES[themeId].msg}</div>}
       <header className="nav">
         <div className="nav-in">
           <nav className={`nav-links left ${open ? 'open' : ''}`}>
