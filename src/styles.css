@@ -68,6 +68,15 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; color: var(--ink); mar
 .hero.dark { background: var(--carbon); color: var(--white); }
 .hero.dark h2 { color: var(--white); }
 .hero.dark .hero-foot p { opacity: .8; }
+.hero.split { flex-direction: row; align-items: stretch; }
+.hero.split .hero-in { flex: 1 1 50%; max-width: none; margin: 0; padding-left: max(24px, calc((100vw - var(--max)) / 2 + 24px)); }
+.hero-side { position: relative; flex: 1 1 50%; min-height: 78vh; }
+.hero-side img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+@media (max-width: 860px) {
+  .hero.split { flex-direction: column; }
+  .hero-side { min-height: 0; aspect-ratio: 4 / 5; order: -1; }
+  .hero.split .hero-in { padding-left: 24px; }
+}
 
 /* Grid */
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
