@@ -233,3 +233,18 @@ textarea.in { min-height: 90px; resize: vertical; }
 .tick { width: 20px; height: 20px; flex: none; border: 1px solid var(--pale-slate); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; line-height: 1; color: var(--white); }
 .pick.on .tick { background: var(--slate); border-color: var(--slate); }
 .pick-bar { position: sticky; bottom: 0; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 16px; background: var(--slate); color: var(--white); padding: 16px 24px; margin: 8px -24px 0; }
+
+/* Temas de temporada (se activan desde Admin → Ajustes) */
+.theme-ribbon { position: relative; background: var(--accent); color: var(--theme-ink); text-align: center; font-size: 13px; letter-spacing: .04em; padding: 9px 16px 12px; }
+.theme-ribbon::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--stripe); }
+html[data-theme]:not([data-theme="none"]) .btn-line.solid { background: var(--accent); border-color: var(--accent); color: var(--theme-ink); }
+html[data-theme]:not([data-theme="none"]) .btn-line.solid:hover:not(:disabled) { filter: brightness(1.2); }
+html[data-theme]:not([data-theme="none"]) .pick-bar,
+html[data-theme]:not([data-theme="none"]) .footer { background: var(--accent); }
+html[data-theme]:not([data-theme="none"]) .footer { border-top: 3px solid var(--accent2); }
+html[data-theme]:not([data-theme="none"]) .day.sel,
+html[data-theme]:not([data-theme="none"]) .slot.on,
+html[data-theme]:not([data-theme="none"]) .chip.on,
+html[data-theme]:not([data-theme="none"]) .pick.on .tick { background: var(--accent); border-color: var(--accent); color: var(--theme-ink); }
+html[data-theme]:not([data-theme="none"]) .tag { background: var(--accent2); }
+html[data-theme]:not([data-theme="none"]) .cover-band { border-top: 3px solid var(--accent2); }
