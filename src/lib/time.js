@@ -15,7 +15,13 @@ const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1)
 export const fmtTime = (iso) => new Intl.DateTimeFormat('es-VE', { timeZone: TZ, hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(iso))
 export const fmtDateLong = (ymd) => cap(new Intl.DateTimeFormat('es-VE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(ymd + 'T12:00:00Z')))
 export const fmtMonth = (ymd) => cap(new Intl.DateTimeFormat('es-VE', { timeZone: 'UTC', month: 'long', year: 'numeric' }).format(new Date(ymd + 'T12:00:00Z')).replace(' de ', ' '))
-export const money = (n) => '$' + Number(n || 0).toFixed(2).replace(/\.00$/, '')
+// Tasa USD → Bs (se fija desde SiteContext con la tasa del admin)
+let RATE = 0
+export const setRate = (r) => { RATE = Number(r) > 0 ? Number(r) : 0 }
+export const usd = (n) => '$' + Number(n || 0).toFixed(2).replace(/\.00$/, '')
+export const bs = (n) => 'Bs ' + new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n || 0) * RATE)
+/** Precio para mostrar: en dólares y, si hay tasa activa, también en bolívares */
+export const money = (n) => RATE ? `${usd(n)} · ${bs(n)}` : usd(n)
 export const dur = (m) => m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ' ' + (m % 60) + ' min' : ''}` : `${m} min`
 export const WD = ['D', 'L', 'M', 'M', 'J', 'V', 'S']
 export const WD_LONG = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
