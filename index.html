@@ -23,7 +23,7 @@
         try {
           var standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches
           if (standalone && admin) localStorage.setItem('sa_admin_device', '1')
-          if (standalone && location.pathname === '/' && localStorage.getItem('sa_admin_device')) location.replace('/admin')
+          if (standalone && location.pathname === '/' && location.search.indexOf('sitio') < 0 && localStorage.getItem('sa_admin_device')) location.replace('/admin')
         } catch (e) {}
       })()
     </script>
