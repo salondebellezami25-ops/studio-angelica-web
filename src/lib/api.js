@@ -2,6 +2,11 @@
 import { createClient } from '@supabase/supabase-js'
 import { demoSeed } from './demoSeed'
 
+// Enlaces de correo (invitación / recuperar contraseña): se lee el hash antes de que Supabase lo consuma
+const _hp = new URLSearchParams(typeof window !== 'undefined' ? window.location.hash.slice(1) : '')
+export const AUTH_LINK = _hp.get('error_code') || _hp.get('error') ? 'error' : _hp.get('type')
+export const AUTH_LINK_ERROR = _hp.get('error_description')
+
 const URL = import.meta.env.VITE_SUPABASE_URL
 const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
 export const DEMO = !URL || !KEY
@@ -212,6 +217,16 @@ export async function signIn(email, password) {
   const { data, error } = await sb.auth.signInWithPassword({ email, password })
   if (error) throw new Error('Correo o contraseña incorrectos')
   return data.session
+}
+export async function setPassword(password) {
+  if (DEMO) return
+  const { error } = await sb.auth.updateUser({ password })
+  if (error) throw new Error(error.message)
+}
+export async function sendReset(email) {
+  if (DEMO) return
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/admin' })
+  if (error) throw new Error(error.message)
 }
 export async function signOut() {
   if (DEMO) { sessionStorage.removeItem('demo_admin'); return }
