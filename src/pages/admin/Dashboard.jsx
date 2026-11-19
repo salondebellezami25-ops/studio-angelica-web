@@ -4,10 +4,10 @@ import * as api from '../../lib/api'
 import { useSite } from '../../components/SiteContext'
 import { Head } from './AdminLayout'
 import ApptTable from './ApptTable'
-import { ymdNow, addDays, toISO, money, fmtMonth, fmtDateLong } from '../../lib/time'
+import { ymdNow, addDays, toISO, usd as money, fmtMonth, fmtDateLong } from '../../lib/time'
 
 export default function Dashboard() {
-  const { settings } = useSite()
+  const { settings, reload } = useSite()
   const today = ymdNow()
   const monthStart = today.slice(0, 7) + '-01'
   const [d, setD] = useState(null)
@@ -37,6 +37,7 @@ export default function Dashboard() {
   return (
     <>
       <Head title="Resumen"><span className="caption muted" style={{ textTransform: 'uppercase' }}>{fmtMonth(today)}</span></Head>
+      <RateCard settings={settings} reload={reload} />
       <div className="kpis">
         <div className="kpi"><span className="caption muted">Citas del mes</span><b>{d.citas}</b></div>
         <div className="kpi"><span className="caption muted">Ingresos cobrados</span><b>{money(d.ingresos)}</b></div>
@@ -53,5 +54,41 @@ export default function Dashboard() {
       <h2 className="h-sub" style={{ marginBottom: 16 }}>Hoy · {fmtDateLong(today)}</h2>
       <ApptTable rows={d.todays} onChange={load} showDate={false} salonName={settings.salon_name} />
     </>
+  )
+}
+
+function RateCard({ settings, reload }) {
+  const [rate, setRateVal] = useState(settings.usd_ves_rate ?? '')
+  const [show, setShow] = useState(!!settings.show_bs)
+  const [msg, setMsg] = useState('')
+  const upd = settings.rate_updated_at ? new Date(settings.rate_updated_at) : null
+  const todayVE = new Date().toLocaleDateString('es-VE', { timeZone: 'America/Caracas' })
+  const stale = !upd || upd.toLocaleDateString('es-VE', { timeZone: 'America/Caracas' }) !== todayVE
+  const save = async (e) => {
+    e.preventDefault()
+    const r = Number(String(rate).replace(/\./g, '').replace(',', '.'))
+    if (show && !(r > 0)) return setMsg('Escribe una tasa válida, por ejemplo 365,50.')
+    await api.saveSettings({ usd_ves_rate: r > 0 ? r : null, show_bs: show, rate_updated_at: new Date().toISOString() })
+    await reload(); setMsg('Tasa guardada.'); setTimeout(() => setMsg(''), 2500)
+  }
+  return (
+    <form className="panel" onSubmit={save} style={{ marginBottom: 32 }}>
+      <div className="toolbar" style={{ justifyContent: 'space-between', alignItems: 'flex-end', gap: 24 }}>
+        <div>
+          <p className="caption muted" style={{ margin: '0 0 8px' }}>Tasa del día (Bs por 1 USD)</p>
+          <div className="toolbar">
+            <input className="in" style={{ width: 180, background: 'var(--white)', fontSize: 20 }} inputMode="decimal" placeholder="365,50"
+              value={rate} onChange={e => setRateVal(e.target.value)} />
+            <label className="check"><input type="checkbox" checked={show} onChange={e => setShow(e.target.checked)} />Mostrar precios en Bs en el sitio</label>
+            <button className="btn-line solid">Guardar tasa</button>
+          </div>
+        </div>
+        <div style={{ fontSize: 13, textAlign: 'right' }}>
+          {upd ? <>Última actualización:<br /><span style={{ color: 'var(--ink)' }}>{upd.toLocaleString('es-VE', { timeZone: 'America/Caracas', dateStyle: 'medium', timeStyle: 'short' })}</span></> : 'Aún no hay tasa guardada.'}
+          {show && stale && <div className="err" style={{ marginTop: 8 }}>La tasa no es de hoy. Actualízala.</div>}
+        </div>
+      </div>
+      {msg && <p className="muted" style={{ margin: '12px 0 0' }}>{msg}</p>}
+    </form>
   )
 }
