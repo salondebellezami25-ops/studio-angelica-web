@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Outlet, Navigate, Link, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, Navigate, Link, useNavigate, useLocation } from 'react-router-dom'
 import * as api from '../../lib/api'
 import { useSite } from '../../components/SiteContext'
 
@@ -7,6 +7,10 @@ export default function AdminLayout() {
   const [session, setSession] = useState(undefined)
   const { settings } = useSite()
   const nav = useNavigate()
+  const loc = useLocation()
+  const [open, setOpen] = useState(false)
+  useEffect(() => { setOpen(false); window.scrollTo(0, 0) }, [loc.pathname])
+  useEffect(() => { document.body.style.overflow = open ? 'hidden' : ''; return () => { document.body.style.overflow = '' } }, [open])
   useEffect(() => {
     api.getSession().then(setSession)
     return api.onAuthChange(setSession)
@@ -22,7 +26,13 @@ export default function AdminLayout() {
 
   return (
     <div className="admin">
-      <aside className="side">
+      <header className="adm-top">
+        <Link to="/admin" className="brand">{settings?.salon_name || 'Admin'}</Link>
+        <button className="adm-menu-btn" onClick={() => setOpen(o => !o)} aria-expanded={open} aria-label="Menú">
+          <span className={'burger' + (open ? ' x' : '')}><i /><i /></span>{open ? 'Cerrar' : 'Menú'}
+        </button>
+      </header>
+      <aside className={'side' + (open ? ' open' : '')}>
         <div className="brand">{settings?.salon_name || 'Admin'}</div>
         <NavLink end to="/admin">Resumen</NavLink>
         <NavLink to="/admin/citas">Citas</NavLink>
