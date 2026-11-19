@@ -218,6 +218,13 @@ textarea.in { min-height: 90px; resize: vertical; }
 .demo-bar { background: var(--ink); color: var(--white); font-size: 12px; letter-spacing: .1em; text-align: center; padding: 8px 16px; }
 .demo-bar a { color: var(--white); }
 .adm-top { display: none; }
+/* iPhone: con letra < 16px Safari hace zoom al escribir y la página queda “cortada”. */
+@media (max-width: 900px) {
+  input, select, textarea, .in, select.in, textarea.in { font-size: 16px; }
+  .main { overflow-x: hidden; }
+  .main .tbl { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; }
+  .main-head .toolbar { letter-spacing: .12em; }
+}
 @media (max-width: 900px) {
   .admin { grid-template-columns: 1fr; }
   /* Barra superior fina + menú desplegable a pantalla completa */
