@@ -10,6 +10,12 @@ export default function Login() {
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
   const nav = useNavigate()
+  const [info, setInfo] = useState('')
+  const forgot = async () => {
+    setErr(''); setInfo('')
+    if (!email) return setErr('Escribe tu correo y vuelve a pulsar «¿Olvidaste tu contraseña?».')
+    try { await api.sendReset(email); setInfo('Te enviamos un correo con el enlace para crear una nueva contraseña.') } catch (e2) { setErr(e2.message) }
+  }
   const submit = async (e) => {
     e.preventDefault(); setErr(''); setBusy(true)
     try { await api.signIn(email, pass); nav('/admin') } catch (e2) { setErr(e2.message) } finally { setBusy(false) }
@@ -25,7 +31,9 @@ export default function Login() {
         <label className="f"><span>Contraseña</span><input className="in" type="password" value={pass} onChange={e => setPass(e.target.value)} required={!api.DEMO} autoComplete="current-password" /></label>
         {api.DEMO && <p className="note">Modo demo: entra con cualquier dato.</p>}
         {err && <div className="err">{err}</div>}
+        {info && <p className="note">{info}</p>}
         <button className="btn-line solid" disabled={busy}>{busy ? 'Entrando…' : 'Entrar'}</button>
+        <button type="button" className="ghost" style={{ textAlign: 'left' }} onClick={forgot}>¿Olvidaste tu contraseña?</button>
         <Link className="ghost" to="/">Volver al sitio</Link>
       </form>
     </div>
