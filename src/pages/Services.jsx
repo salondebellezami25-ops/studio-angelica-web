@@ -4,7 +4,7 @@ import { useSite } from '../components/SiteContext'
 import { money, dur } from '../lib/time'
 
 export default function Services() {
-  const { categories, services } = useSite()
+  const { categories, services, settings } = useSite()
   const [cat, setCat] = useState('all')
   const groups = [
     ...categories.map(c => ({ ...c, items: services.filter(s => s.category_id === c.id) })),
@@ -15,7 +15,8 @@ export default function Services() {
     <section className="section">
       <div className="wrap" style={{ maxWidth: 1000 }}>
         <h1 className="h-heading">Servicios<br />y precios</h1>
-        <p className="muted" style={{ margin: '16px 0 32px', maxWidth: 520 }}>Elige tu tratamiento y reserva directamente. Los precios marcados con «desde» pueden variar según el largo o la necesidad.</p>
+        <p className="muted" style={{ margin: '16px 0 32px', maxWidth: 560 }}>Elige tu tratamiento y reserva directamente. Los precios marcados con «desde» pueden variar según el largo o la necesidad.
+          {settings?.show_bs && Number(settings.usd_ves_rate) > 0 && <><br />Precios en bolívares calculados con la tasa de {new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2 }).format(settings.usd_ves_rate)} Bs/USD{settings.rate_updated_at ? ` del ${new Date(settings.rate_updated_at).toLocaleDateString('es-VE', { timeZone: 'America/Caracas' })}` : ''}.</>}</p>
         <div className="chips" style={{ marginBottom: 40 }}>
           <button className={`chip ${cat === 'all' ? 'on' : ''}`} onClick={() => setCat('all')}>Todos</button>
           {categories.filter(c => services.some(s => s.category_id === c.id)).map(c =>
