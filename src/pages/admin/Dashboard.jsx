@@ -72,7 +72,7 @@ function RateCard({ settings, reload }) {
     await reload(); setMsg('Tasa guardada.'); setTimeout(() => setMsg(''), 2500)
   }
   return (
-    <form className="panel" onSubmit={save} style={{ marginBottom: 32 }}>
+    <form className="panel rate-card" onSubmit={save} style={{ marginBottom: 32 }}>
       <div className="toolbar" style={{ justifyContent: 'space-between', alignItems: 'flex-end', gap: 24 }}>
         <div>
           <p className="caption muted" style={{ margin: '0 0 8px' }}>Tasa del día (Bs por 1 USD)</p>
@@ -83,7 +83,7 @@ function RateCard({ settings, reload }) {
             <button className="btn-line solid">Guardar tasa</button>
           </div>
         </div>
-        <div style={{ fontSize: 13, textAlign: 'right' }}>
+        <div className="rate-upd" style={{ fontSize: 13, textAlign: 'right' }}>
           {upd ? <>Última actualización:<br /><span style={{ color: 'var(--ink)' }}>{upd.toLocaleString('es-VE', { timeZone: 'America/Caracas', dateStyle: 'medium', timeStyle: 'short' })}</span></> : 'Aún no hay tasa guardada.'}
           {show && stale && <div className="err" style={{ marginTop: 8 }}>La tasa no es de hoy. Actualízala.</div>}
         </div>
