@@ -12,8 +12,11 @@ import ServicesAdmin from './pages/admin/ServicesAdmin'
 import GalleryAdmin from './pages/admin/GalleryAdmin'
 import Schedule from './pages/admin/Schedule'
 import SettingsAdmin from './pages/admin/SettingsAdmin'
+import SetPassword from './pages/admin/SetPassword'
+import { AUTH_LINK } from './lib/api'
 
 export default function App() {
+  if (['invite', 'recovery', 'error'].includes(AUTH_LINK)) return <SiteProvider><SetPassword fromLink /></SiteProvider>
   return (
     <SiteProvider>
       <Routes>
@@ -23,6 +26,7 @@ export default function App() {
           <Route path="reservar" element={<Booking />} />
         </Route>
         <Route path="admin/login" element={<Login />} />
+        <Route path="admin/clave" element={<SetPassword />} />
         <Route path="admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="citas" element={<Appointments />} />
