@@ -42,7 +42,7 @@ export default function AdminLayout() {
         <NavLink to="/admin/horarios">Horarios</NavLink>
         <NavLink to="/admin/ajustes">Ajustes del sitio</NavLink>
         <div className="bottom">
-          <Link to="/" target="_blank" className="ghost light">Ver sitio</Link>
+          <a href="/?sitio=1" target="_blank" rel="noopener" className="ghost light">Ver sitio</a>
           <Link to="/admin/clave" className="ghost light">Cambiar contraseña</Link>
           <button className="ghost light" style={{ textAlign: 'left' }} onClick={async () => { await api.signOut(); nav('/admin/login') }}>Cerrar sesión</button>
         </div>
