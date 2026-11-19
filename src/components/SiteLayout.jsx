@@ -82,7 +82,7 @@ export default function SiteLayout() {
               <Link to="/reservar">Reservar cita</Link>
             </div>
           </div>
-          <p className="caption" style={{ marginTop: 24, color: 'var(--pale-slate)' }}>© {new Date().getFullYear()} {s.salon_name}</p>
+          <p className="caption" style={{ marginTop: 24, color: 'var(--pale-slate)', display: 'flex', justifyContent: 'space-between', gap: 16 }}><span>© {new Date().getFullYear()} {s.salon_name}</span><Link to="/admin" style={{ color: 'inherit', textDecoration: 'none', opacity: .6 }}>Acceso</Link></p>
         </div>
       </footer>
     </>
