@@ -19,6 +19,7 @@ export default function AdminLayout() {
   useEffect(() => {
     const l = document.querySelector('link[rel=manifest]'); if (!l) return
     const prev = l.getAttribute('href'); l.setAttribute('href', '/manifest-admin.webmanifest')
+    try { if (navigator.standalone || matchMedia('(display-mode: standalone)').matches) localStorage.setItem('sa_admin_device', '1') } catch (e) {}
     return () => l.setAttribute('href', prev)
   }, [])
   if (session === undefined) return <div className="wrap section caption muted">Cargando…</div>
