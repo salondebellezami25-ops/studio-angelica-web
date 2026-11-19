@@ -11,6 +11,12 @@ export default function AdminLayout() {
     api.getSession().then(setSession)
     return api.onAuthChange(setSession)
   }, [])
+  // App instalable: dentro del admin, el ícono abre directo el panel
+  useEffect(() => {
+    const l = document.querySelector('link[rel=manifest]'); if (!l) return
+    const prev = l.getAttribute('href'); l.setAttribute('href', '/manifest-admin.webmanifest')
+    return () => l.setAttribute('href', prev)
+  }, [])
   if (session === undefined) return <div className="wrap section caption muted">Cargando…</div>
   if (!session) return <Navigate to="/admin/login" replace />
 
@@ -26,6 +32,7 @@ export default function AdminLayout() {
         <NavLink to="/admin/ajustes">Ajustes del sitio</NavLink>
         <div className="bottom">
           <Link to="/" target="_blank" className="ghost light">Ver sitio</Link>
+          <Link to="/admin/clave" className="ghost light">Cambiar contraseña</Link>
           <button className="ghost light" style={{ textAlign: 'left' }} onClick={async () => { await api.signOut(); nav('/admin/login') }}>Cerrar sesión</button>
         </div>
       </aside>
