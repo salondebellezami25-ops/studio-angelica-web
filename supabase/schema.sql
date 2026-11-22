@@ -180,3 +180,49 @@ update settings set policies = '[
   "Para reprogramar, avísanos con al menos 48 horas de anticipación, sujeto a disponibilidad.",
   "Tu cita queda confirmada cuando te escribimos por WhatsApp."
 ]'::jsonb where id = 1 and policies = '[]'::jsonb;
+-- Cursos y métodos de pago
+create table if not exists courses (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  subtitle text,
+  description text,
+  includes text,
+  status text not null default 'proximamente' check (status in ('proximamente','inscripciones','agotado')),
+  start_text text,
+  price numeric(10,2),
+  image_url text,
+  active boolean not null default true,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+create table if not exists payment_methods (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  detail text,
+  icon_key text not null default 'bank',
+  icon_url text,
+  active boolean not null default true,
+  sort_order int not null default 0,
+  created_at timestamptz not null default now()
+);
+alter table courses enable row level security;
+alter table payment_methods enable row level security;
+grant select on courses, payment_methods to anon, authenticated;
+grant insert, update, delete on courses, payment_methods to authenticated;
+drop policy if exists "public read courses" on courses;
+drop policy if exists "admin all courses" on courses;
+drop policy if exists "public read payments" on payment_methods;
+drop policy if exists "admin all payments" on payment_methods;
+create policy "public read courses" on courses for select using (active or auth.role() = 'authenticated');
+create policy "admin all courses" on courses for all to authenticated using (true) with check (true);
+create policy "public read payments" on payment_methods for select using (active or auth.role() = 'authenticated');
+create policy "admin all payments" on payment_methods for all to authenticated using (true) with check (true);
+insert into payment_methods (name, detail, icon_key, sort_order)
+select * from (values
+  ('Banco de Venezuela', 'Pago móvil y transferencia', 'bank', 1),
+  ('Zelle', 'Transferencia en dólares', 'transfer', 2),
+  ('Zinli', 'Billetera digital', 'wallet', 3),
+  ('Binance', 'USDT · Binance Pay', 'crypto', 4),
+  ('PayPal', 'Pago en línea', 'card', 5)
+) v(name, detail, icon_key, sort_order)
+where not exists (select 1 from payment_methods);
