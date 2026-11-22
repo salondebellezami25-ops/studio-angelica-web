@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import PaymentMethods from '../components/PaymentMethods'
 import { useSite } from '../components/SiteContext'
 import { money, dur } from '../lib/time'
 
@@ -12,6 +13,7 @@ export default function Services() {
   ].filter(g => g.items.length && (cat === 'all' || g.id === cat))
 
   return (
+    <>
     <section className="section">
       <div className="wrap" style={{ maxWidth: 1000 }}>
         <h1 className="h-heading">Servicios<br />y precios</h1>
@@ -44,5 +46,7 @@ export default function Services() {
         {!groups.length && <p className="muted">Pronto publicaremos nuestros servicios.</p>}
       </div>
     </section>
+    <PaymentMethods />
+    </>
   )
 }

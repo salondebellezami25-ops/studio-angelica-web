@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useSite } from '../components/SiteContext'
 import { waLink } from '../components/SiteLayout'
+import PaymentMethods from '../components/PaymentMethods'
 import { money, dur, WD_LONG } from '../lib/time'
 
 const fmtH = (t) => { const [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'p. m.' : 'a. m.'; return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${ap}` }
@@ -47,6 +48,7 @@ export default function Home() {
                 <div className="toolbar" style={{ gap: 32 }}>
                   <Link className="ghost light" to="/reservar">Reservar cita</Link>
                   <Link className="ghost light" to="/servicios">Ver servicios</Link>
+                  <Link className="ghost light" to="/cursos">Ver cursos</Link>
                 </div>
               </div>
             </div>
@@ -56,6 +58,7 @@ export default function Home() {
             <div className="toolbar" style={{ gap: 28 }}>
               <Link className="ghost light" to="/reservar">Reservar cita</Link>
               <Link className="ghost light" to="/servicios">Ver servicios</Link>
+                  <Link className="ghost light" to="/cursos">Ver cursos</Link>
             </div>
           </div>
         </section>
@@ -71,6 +74,7 @@ export default function Home() {
               <div className="toolbar" style={{ gap: 32 }}>
                 <Link className={`ghost ${dark ? 'light' : ''}`} to="/reservar">Reservar cita</Link>
                 <Link className={`ghost ${dark ? 'light' : ''}`} to="/servicios">Ver servicios</Link>
+                <Link className={`ghost ${dark ? 'light' : ''}`} to="/cursos">Ver cursos</Link>
               </div>
             </div>
           </div>
@@ -88,6 +92,8 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      <PaymentMethods />
 
       {s.promo_title && (s.promo_items?.length > 0) && (
         <section className="section band">
