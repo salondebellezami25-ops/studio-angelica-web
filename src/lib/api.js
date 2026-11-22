@@ -101,6 +101,40 @@ export async function deleteGallery(id) {
   unwrap(await sb.from('gallery').delete().eq('id', id))
 }
 
+// ---------------- Cursos y métodos de pago (tablas simples) ----------------
+function table(name) {
+  const clean = (r) => { const { id, created_at, ...rest } = r; return [id, rest] }
+  return {
+    async list({ all = false } = {}) {
+      if (DEMO) return ok((db()[name] || []).filter(x => all || x.active).sort(bySort))
+      let q = sb.from(name).select('*').order('sort_order').order('created_at')
+      if (!all) q = q.eq('active', true)
+      return unwrap(await q)
+    },
+    async save(r) {
+      if (DEMO) return ok(mutate(d => {
+        d[name] = d[name] || []
+        if (r.id) { Object.assign(d[name].find(x => x.id === r.id), r); return r }
+        const n = { ...r, id: uid() }; d[name].push(n); return n
+      }))
+      const [id, rest] = clean(r)
+      const q = id ? sb.from(name).update(rest).eq('id', id) : sb.from(name).insert(rest)
+      return unwrap(await q.select().single())
+    },
+    async remove(id) {
+      if (DEMO) return ok(mutate(d => { d[name] = (d[name] || []).filter(x => x.id !== id) }))
+      unwrap(await sb.from(name).delete().eq('id', id))
+    }
+  }
+}
+const courses = table('courses'), payments = table('payment_methods')
+export const listCourses = (o) => courses.list(o)
+export const saveCourse = (c) => courses.save({ ...c, price: c.price === '' || c.price == null ? null : Number(c.price), sort_order: Number(c.sort_order) || 0 })
+export const deleteCourse = (id) => courses.remove(id)
+export const listPayments = (o) => payments.list(o)
+export const savePayment = (p) => payments.save({ ...p, sort_order: Number(p.sort_order) || 0 })
+export const deletePayment = (id) => payments.remove(id)
+
 // ---------------- Hours & blocked dates ----------------
 export async function getHours() {
   if (DEMO) return ok([...db().hours].sort((a, b) => a.weekday - b.weekday))
