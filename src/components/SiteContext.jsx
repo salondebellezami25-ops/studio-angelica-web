@@ -6,16 +6,18 @@ const Ctx = createContext(null)
 export const useSite = () => useContext(Ctx)
 
 export function SiteProvider({ children }) {
-  const [state, setState] = useState({ loading: true, settings: null, categories: [], services: [], gallery: [], hours: [], blocked: [] })
+  const [state, setState] = useState({ loading: true, settings: null, categories: [], services: [], gallery: [], hours: [], blocked: [], courses: [], payments: [] })
   const [error, setError] = useState(null)
 
   const reload = useCallback(async () => {
     try {
-      const [settings, categories, services, gallery, hours, blocked] = await Promise.all([
-        api.getSettings(), api.listCategories(), api.listServices(), api.listGallery(), api.getHours(), api.listBlocked()
+      const safe = (p) => p.catch(() => [])
+      const [settings, categories, services, gallery, hours, blocked, courses, payments] = await Promise.all([
+        api.getSettings(), api.listCategories(), api.listServices(), api.listGallery(), api.getHours(), api.listBlocked(),
+        safe(api.listCourses()), safe(api.listPayments())
       ])
       setRate(settings?.show_bs ? settings.usd_ves_rate : 0)
-      setState({ loading: false, settings, categories, services, gallery, hours, blocked })
+      setState({ loading: false, settings, categories, services, gallery, hours, blocked, courses, payments })
       if (settings?.salon_name) document.title = `${settings.salon_name} · Reserva tu cita`
     } catch (e) { setError(e.message); setState(s => ({ ...s, loading: false })) }
   }, [])

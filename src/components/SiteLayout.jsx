@@ -49,6 +49,7 @@ export default function SiteLayout() {
         <div className="nav-in">
           <nav className={`nav-links left ${open ? 'open' : ''}`}>
             <NavLink to="/servicios">Servicios</NavLink>
+            <NavLink to="/cursos">Cursos</NavLink>
             <Link to="/#galeria">Galería</Link>
             <Link to="/#politicas">Políticas</Link>
             <Link to="/#ubicacion">Ubicación</Link>
