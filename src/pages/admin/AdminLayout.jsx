@@ -30,7 +30,7 @@ export default function AdminLayout() {
       <header className="adm-top">
         <Link to="/admin" className="brand">{settings?.salon_name || 'Admin'}</Link>
         <button className="adm-menu-btn" onClick={() => setOpen(o => !o)} aria-expanded={open} aria-label="Menú">
-          <span className={'burger' + (open ? ' x' : '')}><i /><i /></span>{open ? 'Cerrar' : 'Menú'}
+          <span className={'adm-burger' + (open ? ' x' : '')}><i /><i /></span>{open ? 'Cerrar' : 'Menú'}
         </button>
       </header>
       <aside className={'side' + (open ? ' open' : '')}>
@@ -38,7 +38,9 @@ export default function AdminLayout() {
         <NavLink end to="/admin">Resumen</NavLink>
         <NavLink to="/admin/citas">Citas</NavLink>
         <NavLink to="/admin/servicios">Servicios y precios</NavLink>
+        <NavLink to="/admin/cursos">Cursos</NavLink>
         <NavLink to="/admin/galeria">Fotos</NavLink>
+        <NavLink to="/admin/pagos">Métodos de pago</NavLink>
         <NavLink to="/admin/horarios">Horarios</NavLink>
         <NavLink to="/admin/ajustes">Ajustes del sitio</NavLink>
         <div className="bottom">
