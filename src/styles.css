@@ -231,10 +231,10 @@ textarea.in { min-height: 90px; resize: vertical; }
   .adm-top { display: flex; position: sticky; top: 0; z-index: 40; height: 56px; padding: 0 20px; align-items: center; justify-content: space-between; background: var(--slate); color: var(--white); }
   .adm-top .brand { font-family: var(--serif); font-size: 22px; color: var(--white); text-decoration: none; line-height: 1; }
   .adm-menu-btn { display: inline-flex; align-items: center; gap: 10px; background: none; border: 0; color: var(--white); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; padding: 8px 0; cursor: pointer; }
-  .burger { position: relative; width: 18px; height: 10px; display: inline-block; }
-  .burger i { position: absolute; left: 0; right: 0; height: 1px; background: currentColor; transition: transform .25s, top .25s; }
-  .burger i:first-child { top: 0; } .burger i:last-child { top: 9px; }
-  .burger.x i:first-child { top: 5px; transform: rotate(45deg); } .burger.x i:last-child { top: 5px; transform: rotate(-45deg); }
+  .adm-burger { position: relative; width: 18px; height: 10px; display: inline-block; }
+  .adm-burger i { position: absolute; left: 0; right: 0; height: 1px; background: currentColor; transition: transform .25s, top .25s; }
+  .adm-burger i:first-child { top: 0; } .adm-burger i:last-child { top: 9px; }
+  .adm-burger.x i:first-child { top: 5px; transform: rotate(45deg); } .adm-burger.x i:last-child { top: 5px; transform: rotate(-45deg); }
   .side { position: fixed; inset: 56px 0 0 0; z-index: 39; height: auto; padding: 24px 24px 32px; gap: 0; overflow-y: auto; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: opacity .25s, transform .25s, visibility .25s; }
   .side.open { opacity: 1; visibility: visible; transform: none; }
   .side .brand { display: none; }
@@ -277,3 +277,37 @@ html[data-theme]:not([data-theme="none"]) .chip.on,
 html[data-theme]:not([data-theme="none"]) .pick.on .tick { background: var(--accent); border-color: var(--accent); color: var(--theme-ink); }
 html[data-theme]:not([data-theme="none"]) .tag { background: var(--accent2); }
 html[data-theme]:not([data-theme="none"]) .cover-band { border-top: 3px solid var(--accent2); }
+
+/* Cursos */
+.courses { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 48px var(--gap); }
+.course { display: flex; flex-direction: column; gap: 20px; }
+.course.dim { opacity: .5; }
+.course-ph { position: relative; display: block; width: 100%; padding: 0; border: 0; background: var(--carbon, #111); aspect-ratio: 2 / 3; overflow: hidden; cursor: zoom-in; }
+.course-ph img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+.course-ph:hover img { transform: scale(1.02); }
+.course-ph .ph-empty { display: grid; place-items: center; height: 100%; font-family: var(--serif); font-size: 64px; color: var(--steel); }
+.course-st { align-self: flex-start; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; padding: 5px 9px; border: 1px solid var(--pale-slate); color: var(--slate); }
+.course-st.st-inscripciones { background: var(--slate); border-color: var(--slate); color: var(--white); }
+.course-st.st-agotado { color: var(--steel); text-decoration: line-through; }
+.admin-courses { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 32px var(--gap); }
+.admin-courses .course-ph { cursor: default; }
+
+/* Métodos de pago */
+.pay-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; margin-bottom: 40px; }
+.pay-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); border-top: 1px solid var(--pale-slate); }
+.pay-item { display: flex; align-items: center; gap: 16px; padding: 24px 16px 24px 0; border-bottom: 1px solid var(--pale-slate); }
+.pay-item.dim { opacity: .5; }
+.pay-ico { flex: none; color: var(--slate); }
+.pay-logo { flex: none; width: auto; max-width: 96px; object-fit: contain; }
+.pay-name { color: var(--ink); font-size: 15px; letter-spacing: .02em; }
+.pay-grid.admin { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0 var(--gap); }
+.icon-pick { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--pale-slate); background: var(--white); cursor: pointer; padding: 0; }
+.icon-pick.on { border-color: var(--slate); background: var(--mist); }
+@media (max-width: 600px) {
+  .courses { grid-template-columns: 1fr; gap: 40px; }
+  .admin-courses { grid-template-columns: 1fr 1fr; gap: 24px 12px; }
+  .pay-grid { grid-template-columns: 1fr 1fr; }
+  .pay-item { flex-direction: column; align-items: flex-start; gap: 10px; padding: 20px 12px 20px 0; }
+  .pay-grid.admin { grid-template-columns: 1fr; }
+  .pay-grid.admin .pay-item { flex-direction: row; }
+}

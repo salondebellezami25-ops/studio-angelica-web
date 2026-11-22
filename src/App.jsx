@@ -4,6 +4,9 @@ import SiteLayout from './components/SiteLayout'
 import Home from './pages/Home'
 import Services from './pages/Services'
 import Booking from './pages/Booking'
+import Courses from './pages/Courses'
+import CoursesAdmin from './pages/admin/CoursesAdmin'
+import PaymentsAdmin from './pages/admin/PaymentsAdmin'
 import AdminLayout from './pages/admin/AdminLayout'
 import Login from './pages/admin/Login'
 import Dashboard from './pages/admin/Dashboard'
@@ -23,6 +26,7 @@ export default function App() {
         <Route element={<SiteLayout />}>
           <Route index element={<Home />} />
           <Route path="servicios" element={<Services />} />
+          <Route path="cursos" element={<Courses />} />
           <Route path="reservar" element={<Booking />} />
         </Route>
         <Route path="admin/login" element={<Login />} />
@@ -32,6 +36,8 @@ export default function App() {
           <Route path="citas" element={<Appointments />} />
           <Route path="servicios" element={<ServicesAdmin />} />
           <Route path="galeria" element={<GalleryAdmin />} />
+          <Route path="cursos" element={<CoursesAdmin />} />
+          <Route path="pagos" element={<PaymentsAdmin />} />
           <Route path="horarios" element={<Schedule />} />
           <Route path="ajustes" element={<SettingsAdmin />} />
         </Route>
