@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useSite } from './SiteContext'
 import { DEMO } from '../lib/api'
 import { THEMES, activeTheme } from '../lib/themes'
+import Motion from './Motion'
 
 export function Logo({ settings, className = 'nav-logo' }) {
   const name = settings?.salon_name || ''
@@ -63,7 +64,8 @@ export default function SiteLayout() {
           </nav>
         </div>
       </header>
-      <main><Outlet /></main>
+      <Motion />
+      <main key={loc.pathname} className="route-fade"><Outlet /></main>
       <footer className="footer">
         <div className="wrap">
           <div className="footer-grid">
