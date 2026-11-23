@@ -324,7 +324,7 @@ html[data-theme]:not([data-theme="none"]) .cover-band { border-top: 3px solid va
 
   /* Aparición al hacer scroll */
   [data-rv] { opacity: 0; transform: translateY(24px); transition: opacity 1s var(--ease) var(--rv-d, 0ms), transform 1s var(--ease) var(--rv-d, 0ms); }
-  [data-rv].in { opacity: 1; transform: none; }
+  [data-rv].rv-in { opacity: 1; transform: none; }
 
   /* Portada: zoom lento de la foto, logo y textos que entran en secuencia */
   .cover-media > img, .hero-bg { animation: sa-kenburns 16s var(--ease) both; transform-origin: 60% 70%; }
