@@ -13,7 +13,7 @@ export default function Motion() {
   useEffect(() => {
     if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const io = new IntersectionObserver((entries) => entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) }
+      if (e.isIntersecting) { e.target.classList.add('rv-in'); io.unobserve(e.target) }
     }), { rootMargin: '0px 0px -6% 0px', threshold: 0.08 })
     const scan = () => document.querySelectorAll(SEL).forEach(el => {
       if (el.dataset.rv || el.closest('.hero, .hero-cover, .admin, .modal-bg')) return
@@ -27,8 +27,8 @@ export default function Motion() {
     let raf = 0
     const sweep = () => {
       raf = 0
-      document.querySelectorAll('[data-rv]:not(.in)').forEach(el => {
-        if (el.getBoundingClientRect().top < window.innerHeight * 0.94) { el.classList.add('in'); io.unobserve(el) }
+      document.querySelectorAll('[data-rv]:not(.rv-in)').forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight * 0.94) { el.classList.add('rv-in'); io.unobserve(el) }
       })
     }
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(sweep) }
