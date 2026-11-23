@@ -30,10 +30,21 @@ export default function Motion() {
       el.dataset.rv = '1'
       io.observe(el)
     })
+    // Respaldo: si se baja muy rápido, mostrar todo lo que ya pasó por la pantalla
+    let raf = 0
+    const sweep = () => {
+      raf = 0
+      document.querySelectorAll('[data-rv]:not(.in)').forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight * 0.94) { el.classList.add('in'); io.unobserve(el) }
+      })
+    }
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(sweep) }
+    window.addEventListener('scroll', onScroll, { passive: true })
     scan()
+    const t = setTimeout(sweep, 120)
     const mo = new MutationObserver(scan)
     mo.observe(document.getElementById('root'), { childList: true, subtree: true })
-    return () => { io.disconnect(); mo.disconnect() }
+    return () => { io.disconnect(); mo.disconnect(); window.removeEventListener('scroll', onScroll); cancelAnimationFrame(raf); clearTimeout(t) }
   }, [loc.pathname])
 
   return null
