@@ -10,13 +10,6 @@ const SEL = [
 export default function Motion() {
   const loc = useLocation()
 
-  // Barra superior: se vuelve translúcida al bajar
-  useEffect(() => {
-    const on = () => document.documentElement.classList.toggle('scrolled', window.scrollY > 8)
-    on(); window.addEventListener('scroll', on, { passive: true })
-    return () => window.removeEventListener('scroll', on)
-  }, [])
-
   useEffect(() => {
     if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const io = new IntersectionObserver((entries) => entries.forEach(e => {
